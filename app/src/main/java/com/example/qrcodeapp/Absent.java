@@ -3,7 +3,9 @@ package com.example.qrcodeapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,12 +20,17 @@ import java.util.List;
 
 
 public class Absent extends AppCompatActivity {
+    public List<String> listAffiche = new ArrayList<>();
+    ListView liste1 = null;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_absent);
+
+        liste1 = (ListView) findViewById(R.id.afficheur);
 
         Button mButtonp42 = (Button) findViewById(R.id.rescanner);
 
@@ -34,13 +41,47 @@ public class Absent extends AppCompatActivity {
                 startActivity(lanceActivityIntent);
             }
         });
+/*
 
         ArrayList<String> nomPresents;
-        try {
+        try
+        {
             nomPresents = recupChaine("listelecture.csv");
-        } catch (IOException ioException) {
+        }
+        catch (IOException ioException)
+        {
             ioException.printStackTrace();
         }
+*/
+
+        //lire le fichiers des qr code scanner
+        String csvFile = "listelecture.csv";
+        BufferedReader buff_r = null;
+        String line = "";
+        String cvsSplitBy = "@";
+
+        try {
+
+            //String ligne_lue;
+            //br = new BufferedReader(new FileReader(csvFile));
+            FileInputStream fin = openFileInput(csvFile);
+            DataInputStream in = new DataInputStream(fin);
+            buff_r = new BufferedReader(new InputStreamReader(in));
+            while ((line = buff_r.readLine()) != null) {
+                String[] name = line.split(cvsSplitBy);
+
+
+                listAffiche.add(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listAffiche);
+        liste1.setAdapter(adapter);
+
     }
 
     protected ArrayList<String> recupChaine(String nomFichier) throws IOException {
